@@ -45,6 +45,15 @@ print('\n\n')
 # yr_76_yrs = yr_76_s.year.unique()
 # yr_10_yrs = yr_10_s.year.unique()
 
+#dff = df.groupby(["SINID","EXTRA"]).MONTREGL.sum().reset_index()
+year_avg = discogs_s.groupby(['year']).price.mean().reset_index()
+print(year_avg)
+
+by_year = plt.figure()
+ax = by_year.add_subplot(111)
+ax.bar(year_avg['year'],year_avg['price'])
+plt.show()
+
 # dby_per_year = [dababy[dababy.year == dby_yrs[i]].shape[0] for i in range(0,len(dby_yrs))]
 # huey_per_year = [huey[huey.year == huey_yrs[i]].shape[0] for i in range(0,len(huey_yrs))]
 # yr_76_per_year = [yr_76[yr_76.year == yr_76_yrs[i]].shape[0] for i in range(0,len(yr_76_yrs))]
