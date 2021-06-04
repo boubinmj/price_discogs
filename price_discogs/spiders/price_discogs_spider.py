@@ -11,7 +11,7 @@ class PriceDiscogsSpider(Spider):
     def parse(self, response):
         start_index = 1496243908
         duration = 100
-        page_urls = [f'https://www.discogs.com/sell/list?format=Vinyl&page={i}' for i in range(1,100)]
+        page_urls = [f'https://www.discogs.com/sell/list?format=Vinyl&page={i}' for i in range(1,10)]
 
         page_bottom = response.xpath('//div[@class="pagination bottom "]//strong[@class="pagination_total"]/text()').extract_first().strip()
         groups = re.search('1 – (\d+) of (\d+)',page_bottom)
