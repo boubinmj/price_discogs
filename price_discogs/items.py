@@ -10,3 +10,4 @@ class PriceDiscogsItem(scrapy.Item):
     year = scrapy.Field()
     price = scrapy.Field()
     artist = scrapy.Field()
+    country = scrapy.Field()

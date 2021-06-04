@@ -11,10 +11,9 @@ class PriceDiscogsSpider(Spider):
     def parse(self, response):
         start_index = 1496243908
         duration = 100
-        page_urls = [f'https://www.discogs.com/sell/list?format=Vinyl&page={i}' for i in range(1,2)]
+        page_urls = [f'https://www.discogs.com/sell/list?format=Vinyl&page={i}' for i in range(1,100)]
 
         page_bottom = response.xpath('//div[@class="pagination bottom "]//strong[@class="pagination_total"]/text()').extract_first().strip()
-        '1 – 25 of 42,580,313'
         groups = re.search('1 – (\d+) of (\d+)',page_bottom)
         per_page = groups.group(1)
 
@@ -41,21 +40,29 @@ class PriceDiscogsSpider(Spider):
         artist = response.xpath('//*[@id="profile_title"]/span[1]/span/a/text()').extract_first()
         year = response.xpath('.//div[@class="content"][4]/text()').extract_first().strip()
         currency = response.xpath('.//div[@class="content"][3]/text()').extract_first().strip()
-        if(currency == 'US'):
-            price = response.xpath('.//span[@class="price"]/text()').extract_first()
+        try:
+            price = response.xpath('.//span[@class="price"]/text()').extract_first().strip()
             shipping = response.xpath('.//span[@class="reduced"]/text()').extract_first().strip()
-            # p = re.search('$(\d+)',price)
-            # shp = re.search('+ $(\d+) shipping',shipping)
-            # total_price = float(p.p(1)) + float(shp.shp(1))
-        else:
+            p = re.search('.(\d+)\.(\d+)',price)
+            try:
+                shp = re.search('\+ .(\d+)\.(\d+) shipping',shipping)
+                total_price = float(p.group(1)) + float(p.group(2))/100 + float(shp.group(1)) + float(shp.group(2))/100
+            except:
+                total_price = float(p.group(1)) + float(p.group(2))/100
+        except:
             price = response.xpath('.//span[@class="muted"]/i/text()').extract_first()
-            # p = re.search('(about $\d+ total)',price)
-            # total_price = float(p.p(1))
+            p = re.search('\(about \$(\d+)\.(\d+) total\)', price)
+            total_price = float(p.group(1)) + float(p.group(2))/100
 
         print(artist)
         print(year)
         print(currency)
-        print(price)
+        print(total_price)
 
-        # item = PriceDiscogsItem()
-        # item['']
+        item = PriceDiscogsItem()
+        item['artist'] = artist
+        item['year'] = year
+        item['country'] = currency
+        item['price'] = total_price
+
+        yield item
